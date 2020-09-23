@@ -1,4 +1,6 @@
 tmp/*
 obj/*
+obj*
+*.o
 lib/*/obj/*
 src/*/obj/*

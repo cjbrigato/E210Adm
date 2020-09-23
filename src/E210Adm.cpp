@@ -45,7 +45,8 @@ void Help() {
         "  -l  only list files\n"
         "  -d  directory to extract into (default is current directory)\n"
         "  -o  overwrite files without prompting\n"
-        "  -t  hex string of encrypted password to dump plaintext\n"
+        "  -T  hex string of encrypted password to dump plaintext\n"
+        "  -t  ascii string of encrypted password to dump plaintext\n"
         "  -c  print dynamic verbose ZoSEncryptionDescriptor Lookup Tables\n"
         "  -g  generate and print static ZosEncryptionDescriptor LUT header file\n"
         "  -R  reverse ZosEncryption (hex string of decrypted bytes->compute encrypted candidates (LUT))\n"
@@ -105,14 +106,22 @@ std::vector<unsigned char> FindEncryptedCandidates(unsigned char DEC_BYTE, uint8
     return candidates;
 }
 
-void DecryptZosEncryptionString(const char *zos_encrypted_string) {
-    std::string hex_chars(zos_encrypted_string);
-    std::istringstream hex_chars_stream(hex_chars);
+void DecryptZosEncryptionString(const char *zos_encrypted_string, bool as_hex_string) {
     std::vector<unsigned char> enc_bytes;
-    unsigned int c;
-    while (hex_chars_stream >> std::hex >> c) {
-        enc_bytes.push_back(c);
+    if (!as_hex_string) {
+        int len = strnlen(zos_encrypted_string, 0x77);
+        for (int i = 0; i < len; i++) {
+            enc_bytes.push_back(zos_encrypted_string[i]);
+        }
+    } else {
+        std::string hex_chars(zos_encrypted_string);
+        std::istringstream hex_chars_stream(hex_chars);
+        unsigned int c;
+        while (hex_chars_stream >> std::hex >> c) {
+            enc_bytes.push_back(c);
+        }
     }
+
     ZoSEncryptionDescriptor tEncryptionDescriptor = ZoSEncryptionDescriptor(&enc_bytes[0], enc_bytes.size());
     printf("\n");
     SsnZipFile::DisplayCurrentFileEncryptionDescriptor(false, tEncryptionDescriptor);
@@ -275,7 +284,9 @@ int main(int argc, char **argv) {
                 if ((c == 't') || (c == 'T')) {
                     E210Adm::Banner();
                     zos_encrypted_string = argv[i + 1];
-                    E210Adm::DecryptZosEncryptionString(zos_encrypted_string);
+                    if (c == 'T')
+                        as_hex_string = true;
+                    E210Adm::DecryptZosEncryptionString(zos_encrypted_string, as_hex_string);
                     return 0;
                 }
                 if ((c == 'r') || (c == 'R')) {

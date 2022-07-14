@@ -11,7 +11,10 @@ Be them *.patchmanifest, *.version, *.solidpkg and so on, they are all
 ## .patchmanifests 
 
 * embeds "manifest.xml"
-* are downloaded as instructed by the "applicationList", which comes from "applications.json" or "applications_mac.json" depending on OS (http://launcher.bethesda.net/applications[_mac].json).
+* are downloaded as instructed by the "applicationList", which comes from "applications.json" or "applications_mac.json" depending on OS 
+** http://launcher.bethesda.net/applications.json
+** http://launcher.bethesda.net/applications_mac.json
+* Since few month : interesting part is in the jwt payload.
 * they contain all current and past specific URL to download assets and game files and runtimes
 * they link to .solidpkg files
 * the "-1toX" versions are those that contains no incremental subpart and are what the patcher target either when incremental patching is not possible or when the full file group is absent (i.e. no "depot" directory)

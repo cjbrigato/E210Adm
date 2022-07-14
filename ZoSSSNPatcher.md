@@ -52,45 +52,8 @@ A simple Findpattern after reading it's own content stopping at first occurence 
 * Lenght of the extrafield payload is actually lenght of password
 * Payload is Xored original password. Decryption seems to rely more on some blackmagic "crypto" that I failed to get the point. It is NULL preserving and it has the pretention of always resulting in an ASCII password. Which it usually fails to, so the password has to be given programmatically.
 
-The Decryption function :
-
-```
-	enum class Const {
-		ShiftHiBound = 0x21,
-		ShiftLoBound = 0x7e,
-		PasswordLenHiBound = 0x77,
-		ShifMaxIterations = 0x8,
-	};
-
-	uint16_t mRawDescriptorLen = (int)Const::PasswordLenHiBound;
-	unsigned char mRawDescriptor[(int)Const::PasswordLenHiBound] = { 0 };
-    uint16_t mPasswordLen = 0;
-	unsigned char* mEncryptedPassword;
-	unsigned char mPlainTextPassword[(int)Const::PasswordLenHiBound] = { 0 };
-
-	static void UnXor(BYTE* pEncryptedPassword) {
-		BYTE in, out;
-		int ctr, shift;
-
-		ctr = 0;
-		in = *pEncryptedPassword;
-		while ((in != '\0' && (ctr < (int)Const::PasswordLenHiBound))) {
-			shift = (int)Const::ShifMaxIterations;
-			out = ('\x01' << (ctr & 0x1f)) + pEncryptedPassword[ctr] ^ pEncryptedPassword[(int)Const::PasswordLenHiBound];
-			while ((BYTE)Const::ShiftLoBound < out && (0 < shift)) {
-				out = out & ~('\x01' << (shift & 0x1f));
-				shift--;
-			}
-			if (out < (BYTE)Const::ShiftHiBound) {
-                out = ('\x01' << (out % 3 + 5) | out) + 1;
-			}
-			pEncryptedPassword[ctr] = out;
-			ctr++;
-			in = pEncryptedPassword[ctr];
-		}
-		pEncryptedPassword[ctr] = '\0';
-	}
-```
+The Decryption function : see 
+* https://github.com/cjbrigato/E210Adm/blob/d043495b7eefa823da512c91a62d7a580eee6d84/src/ZoSEncryptionDescriptor.h#L28
 
 ## Demo Utility
 * a macosx ready but easy to compile on VS too is provided (don't forget to rename lib/minizip/iowin32.* files back)

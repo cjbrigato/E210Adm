@@ -9,10 +9,10 @@
 make clean all
 ```
 ## VSStudio>2015
-* Use provided SLN
+* Better use WSL/2 and follow previous :)
 
-# Build for X64
-* Will undefinely randomly bug on x86 32 bit builds 
+# Please : Build for X64
+* Will undefinely randomly bug if built for x86 32 bit builds 
 
 # Demo
 ![Screenshot](https://github.com/cjbrigato/E210Adm/raw/master/.resources/screenshot.jpg)
